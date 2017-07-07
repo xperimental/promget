@@ -23,18 +23,18 @@ func main() {
 	}
 
 	query := pflag.Arg(0)
-	if len(query) == 0 {
+	if !(*onlyList) && len(query) == 0 {
 		log.Fatal("usage: promget [options] <query>")
 	}
 
 	scraper := newScraper(*addr, *interval)
 
-	samples, err := scraper.Scrape(time.Now())
-	if err != nil {
-		log.Fatalf("Error during initial scrape: %s", err)
-	}
-
 	if *onlyList {
+		samples, err := scraper.Scrape(time.Now())
+		if err != nil {
+			log.Fatalf("Error getting list: %s", err)
+		}
+
 		for _, s := range samples {
 			name := s.Metric.String()
 			fmt.Printf("%s\n", name)
